@@ -315,10 +315,15 @@ function startAutomationInTab(tabId, config, scheduledStopTime, sendResponse) {
       // Calculate ms until stop time
       const timeUntilStop = scheduledTime - Date.now();
       
-      // Set up the timer
-      runningTabs[targetTabId].scheduledStopTimer = setTimeout(() => {
-        executeScheduledStop(targetTabId);
-      }, timeUntilStop);
+      // Validate that the scheduled time is in the future
+      if (timeUntilStop > 0) {
+        // Set up the timer
+        runningTabs[targetTabId].scheduledStopTimer = setTimeout(() => {
+          executeScheduledStop(targetTabId);
+        }, timeUntilStop);
+      } else {
+        console.warn(`Scheduled stop time is in the past or invalid: ${scheduledStopTime}`);
+      }
     }
     
     // If we should run in all tabs, execute in all tabs

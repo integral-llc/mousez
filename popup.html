@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Random Mouse Automation</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+    
+    h1 {
+      font-size: 18px;
+      margin-top: 0;
+      text-align: center;
+    }
+    
+    .control-panel {
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+    }
+    
+    .status {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    
+    .status.running {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .status.stopped {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .main-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    button {
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+    }
+    
+    button.start {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    button.stop {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .settings {
+      margin-top: 15px;
+    }
+    
+    .setting-row {
+      margin-bottom: 10px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+    }
+    
+    input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .disabled-control {
+      opacity: 0.6;
+    }
+    
+    .disabled-text {
+      color: #999;
+    }
+    
+    .range-values {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .value-display {
+      font-size: 13px;
+      color: #007bff;
+      text-align: center;
+      margin-top: 3px;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .checkbox-container input {
+      margin-right: 8px;
+    }
+    
+    .checkbox-container label {
+      margin: 0;
+      font-weight: normal;
+      font-size: 13px;
+      display: inline;
+    }
+    
+    .schedule-container {
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
+    
+    .schedule-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .schedule-option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .schedule-option label {
+      margin: 0 0 0 5px;
+      font-weight: normal;
+      font-size: 13px;
+    }
+    
+    .schedule-inputs {
+      margin-top: 5px;
+      margin-left: 25px;
+    }
+    
+    .schedule-inputs input[type="number"],
+    .schedule-inputs input[type="time"] {
+      width: 100px;
+      padding: 3px 5px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    
+    .schedule-status {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Mouse Automation</h1>
+  
+  <div class="status stopped" id="status">Status: Stopped</div>
+  
+  <div class="control-panel">
+    <div class="main-controls">
+      <button id="startBtn" class="start">Start</button>
+      <button id="stopBtn" class="stop" disabled>Stop</button>
+    </div>
+    
+    <div class="checkbox-container">
+      <input type="checkbox" id="runInBackground" checked>
+      <label for="runInBackground">Continue automation when tab is not active</label>
+    </div>
+    
+    <div class="checkbox-container">
+      <input type="checkbox" id="showTitleIndicator" checked>
+      <label for="showTitleIndicator">Show indicator in page title</label>
+    </div>
+    
+    <div class="settings">
+      <div class="setting-row">
+        <label for="clickProbability">Click Probability</label>
+        <input type="range" id="clickProbability" min="0" max="100" value="30">
+        <div class="range-values">
+          <span>Never</span>
+          <span>Always</span>
+        </div>
+        <div class="value-display" id="clickProbabilityValue">30%</div>
+      </div>
+      
+      <div class="setting-row">
+        <label for="movementInterval">Movement Interval</label>
+        <input type="range" id="movementInterval" min="0" max="100" value="50">
+        <div class="range-values">
+          <span>Fast</span>
+          <span>Slow</span>
+        </div>
+        <div class="value-display" id="movementIntervalValue">0.5s - 3s</div>
+      </div>
+      
+      <div class="setting-row">
+        <label for="movementSteps">Movement Smoothness</label>
+        <input type="range" id="movementSteps" min="0" max="100" value="50">
+        <div class="range-values">
+          <span>Quick</span>
+          <span>Smooth</span>
+        </div>
+        <div class="value-display" id="movementStepsValue">5 - 15 steps</div>
+      </div>
+      
+      <div class="schedule-container">
+        <div class="schedule-title">Schedule Stop</div>
+        
+        <div class="schedule-option">
+          <input type="radio" id="scheduleNone" name="scheduleType" value="none" checked>
+          <label for="scheduleNone">Don't schedule stop</label>
+        </div>
+        
+        <div class="schedule-option">
+          <input type="radio" id="scheduleDuration" name="scheduleType" value="duration">
+          <label for="scheduleDuration">Stop after duration</label>
+          <div class="schedule-inputs" id="durationInputs" style="display: none;">
+            <input type="number" id="durationMinutes" min="1" max="1440" value="30"> minutes
+          </div>
+        </div>
+        
+        <div class="schedule-option">
+          <input type="radio" id="scheduleTime" name="scheduleType" value="time">
+          <label for="scheduleTime">Stop at specific time</label>
+          <div class="schedule-inputs" id="timeInputs" style="display: none;">
+            <input type="time" id="stopTime">
+          </div>
+        </div>
+        
+        <div class="schedule-status" id="scheduleStatus"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

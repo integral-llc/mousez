@@ -1,0 +1,40 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="rainbow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#ff0000" />
+      <stop offset="16%" stop-color="#ff8000" />
+      <stop offset="33%" stop-color="#ffff00" />
+      <stop offset="50%" stop-color="#00ff00" />
+      <stop offset="66%" stop-color="#0080ff" />
+      <stop offset="83%" stop-color="#8000ff" />
+      <stop offset="100%" stop-color="#ff00ff" />
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Shadow -->
+  <ellipse cx="50" cy="55" rx="18" ry="5" fill="rgba(0,0,0,0.3)" />
+  
+  <!-- Main cursor circle -->
+  <g id="cursor">
+    <circle cx="50" cy="50" r="20" fill="url(#rainbow)" filter="url(#glow)">
+      <animate id="normal-pulse" attributeName="r" values="20;22;20" dur="2s" repeatCount="indefinite" />
+      <animate id="click-jiggle" attributeName="r" values="20;26;18;24;19;23;20" dur="0.5s" begin="click-trigger.begin" fill="freeze" />
+    </circle>
+    
+    <!-- Inner highlight -->
+    <circle cx="42" cy="42" r="8" fill="white" opacity="0.3" />
+    
+    <!-- Click animation trigger -->
+    <animate id="click-trigger" begin="0s;click-trigger.end+2s" dur="0.01s" attributeName="visibility" from="visible" to="visible" />
+  </g>
+  
+  <!-- Click ripple effect -->
+  <circle cx="50" cy="50" r="20" fill="none" stroke="white" stroke-width="2" opacity="0">
+    <animate attributeName="r" values="20;40" dur="0.7s" begin="click-trigger.begin" fill="freeze" />
+    <animate attributeName="opacity" values="0.7;0" dur="0.7s" begin="click-trigger.begin" fill="freeze" />
+  </circle>
+</svg>
